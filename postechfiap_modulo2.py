@@ -1,4 +1,4 @@
-from getch import getch
+# Imports
 from utils import imprimir_matriz, ler_inteiro_positivo, limpar_console
 import math
 import random
@@ -42,21 +42,13 @@ if __name__ == "__main__":
 
     # Definição do número de cidades
     print("1 - DEFINIÇÃO DO NÚMERO DE CIDADES")
-    entradaValida = False
-    numCidades = None | int
-    posCidades = None
-    matrizDistancias = None
-    perc_cnx_aviao = 0
-    qtd_cnx_aviao = None
-    matrizAviao = None
-    perc_cnx_trem = 0
-    qtd_cnx_trem = None
-    matrizTrem = None
-    while not entradaValida:
+    entrada = None
+    numCidades: int
+    while entrada is None:
         print(f"Digite um número inteiro positivo maior ou igual a {MIN_CIDADES} e menor ou igual a {MAX_CIDADES}: ", end="", flush=True)
-        numCidades = ler_inteiro_positivo(MIN_CIDADES, MAX_CIDADES)
-        if numCidades is not None:
-            entradaValida = True
+        entrada = ler_inteiro_positivo(MIN_CIDADES, MAX_CIDADES)
+        if entrada is not None:
+            numCidades = entrada
             print(f"Número de cidades definido para {numCidades}.\n")
 
 
@@ -85,53 +77,49 @@ if __name__ == "__main__":
 
     # Definindo aleatoriamente rotas possíveis de avião entre as cidades
     print("4 - DEFININDO ALEATORIAMENTE ROTAS UNIDIRECIONAIS POSSÍVEIS DE AVIÃO ENTRE AS CIDADES")
-    entradaValida = False
-    while not entradaValida:
+    entrada = None
+    perc_cnx_aviao: int
+    while entrada is None:
         print(f"Digite um percentual válido entre 0 e 100 para a proporção de rotas possíveis de avião: ", end="", flush=True)
-        perc_cnx_aviao = ler_inteiro_positivo(0, 100)
-        if perc_cnx_aviao is not None:
-            entradaValida = True
+        entrada = ler_inteiro_positivo(0, 100)
+        if entrada is not None:
+            perc_cnx_aviao = entrada
     qtd_cnx_aviao = (numCidades * (numCidades - 1)) * perc_cnx_aviao // 100
     print(f"Percentual de rotas de avião definido para {perc_cnx_aviao}%, resultando em {qtd_cnx_aviao} rotas unidirecionais possíveis.\n")
-    vetor_rotas_aviao = list(range(1, (numCidades * (numCidades - 1)) + 1))
+    vetor_rotas_aviao = list(range((numCidades * (numCidades - 1))))
     rotas_aviao = sorted(random.sample(vetor_rotas_aviao, k = qtd_cnx_aviao))
-    print(rotas_aviao)
     matrizAviao = [[0 for _ in range(numCidades)] for _ in range(numCidades)]
-    for i in range(len(matrizAviao)):
-         for j in range(len(matrizAviao)):
-             if i == j:
-                 matrizAviao[i][j] = -1
+    for rota in rotas_aviao:
+        xma = rota // (numCidades - 1)
+        yma = rota % (numCidades - 1)
+        if yma >= xma:
+            yma += 1
+        matrizAviao[xma][yma] = 1
     print("Matriz de rotas de avião: \n")
     imprimir_matriz(matrizAviao)
-    for rota in rotas_aviao:
-        yma = rota // numCidades
-        xma = rota % numCidades
-        if xma >= yma:
-            xma += 1
-        print(f"Para rota {rota}: xma = {xma}, yma = {yma}")
-        # matrizAviao[xma][yma] = 1
 
 
 
     # Definindo aleatoriamente rotas possíveis de trem entre as cidades
     print("5 - DEFININDO ALEATORIAMENTE ROTAS BIDIRECIONAIS POSSÍVEIS DE TREM ENTRE AS CIDADES")
-    entradaValida = False
-    while not entradaValida:
+    entrada = None
+    perc_cnx_trem: int
+    while entrada is None:
         print(f"Digite um percentual válido entre 0 e 100 para a proporção de rotas possíveis de trem: ", end="", flush=True)
-        perc_cnx_trem = ler_inteiro_positivo(0, 100)
-        if perc_cnx_trem is not None:
-            entradaValida = True
+        entrada = ler_inteiro_positivo(0, 100)
+        if entrada is not None:
+            perc_cnx_trem = entrada
     qtd_cnx_trem = (numCidades * (numCidades - 1) // 2) * perc_cnx_trem // 100
     print(f"Percentual de rotas de trem definido para {perc_cnx_trem}%, resultando em {qtd_cnx_trem} rotas bidirecionais possíveis.\n")
-    vetor_rotas_trem = list(range(1, (numCidades * (numCidades - 1) // 2) + 1))
+    vetor_rotas_trem = list(range((numCidades * (numCidades - 1) // 2)))
     rotas_trem = sorted(random.sample(vetor_rotas_trem, k = qtd_cnx_trem))
     matrizTrem = [[0 for _ in range(numCidades)] for _ in range(numCidades)]
     ymt, controle = 0, 0
     for rota in rotas_trem:
-        while rota > controle + (numCidades - ymt - 1):
+        while rota >= controle + (numCidades - ymt - 1):
             controle += (numCidades - ymt - 1)
             ymt += 1
-        xmt = rota - controle + ymt
+        xmt = rota - controle + ymt + 1
         matrizTrem[xmt][ymt] = 1
         matrizTrem[ymt][xmt] = 1
     print("Matriz de rotas de trem: \n")
