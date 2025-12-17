@@ -18,17 +18,6 @@ def imprimir_matriz(matriz, largura: int = 8, casasDecimais: int = 0):
         print("Matriz vazia")
         return
 
-    # função auxiliar: converte índice (0 -> A, 25 -> Z, 26 -> AA, etc.)
-    def indice_para_letra(indice: int) -> str:
-        letras = []
-        i = indice
-        while True:
-            i, resto = divmod(i, 26)
-            letras.append(chr(ord('A') + resto))
-            if i == 0:
-                return ''.join(reversed(letras))
-            i -= 1
-
     n = len(matriz)
     fmt = f"{{:>{largura}.{casasDecimais}f}}"
 
@@ -44,6 +33,18 @@ def imprimir_matriz(matriz, largura: int = 8, casasDecimais: int = 0):
         row_label = indice_para_letra(i)
         print(f"{row_label:>{largura}} {row_str}")
     print()
+
+
+
+def indice_para_letra(indice: int) -> str:
+    letras = []
+    i = indice
+    while True:
+        i, resto = divmod(i, 26)
+        letras.append(chr(ord('A') + resto))
+        if i == 0:
+            return ''.join(reversed(letras))
+        i -= 1
 
 
 

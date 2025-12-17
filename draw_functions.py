@@ -52,12 +52,27 @@ def draw_plot(screen: pygame.Surface, x: list, y: list, x_label: str = 'Generati
         plt.close(fig)
 
 
-def draw_cities(screen: pygame.Surface, cities_locations: List[Tuple[int, int]], rgb_color: Tuple[int, int, int], node_radius: int) -> None:
-    """
-    Draws circles representing cities on the given Pygame screen.
-    """
-    for city_location in cities_locations:
-        pygame.draw.circle(screen, rgb_color, city_location, node_radius)
+def draw_cities(
+        screen: pygame.Surface,
+        cities_locations: List[Tuple[int, int]],
+        rgb_color: Tuple[int, int, int],
+        node_radius: int,
+        labels: Optional[List[str]] = None,
+        font_size: int = 18,
+        font_color: Tuple[int, int, int] = (0, 0, 0),
+        label_offset: Tuple[int, int] = (-5, 7)) -> None:
+        """
+        Desenha cidades (círculos) e opcionalmente um label para cada cidade.
+        - labels: lista de strings com mesmo comprimento que cities_locations.
+        - label_offset: deslocamento (x,y) em pixels aplicado à posição do label.
+        """
+        for city_location in cities_locations:
+            pygame.draw.circle(screen, rgb_color, city_location, node_radius)
+            if labels is not None:
+                pygame.font.init()
+                my_font = pygame.font.SysFont('Arial', font_size, True)
+                text_surface = my_font.render(labels[cities_locations.index(city_location)], False, font_color)
+                screen.blit(text_surface, (city_location[0] + label_offset[0], city_location[1] + label_offset[1]))
 
 
 def draw_paths(screen: pygame.Surface, path: List[Tuple[int, int]], rgb_color: Tuple[int, int, int], width: int = 1) -> None:
