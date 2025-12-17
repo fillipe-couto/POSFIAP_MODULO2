@@ -1,9 +1,9 @@
-
-
+from postechfiap_modulo2 import TIPO_TRANSPORTE_AVIAO, TIPO_TRANSPORTE_TREM, TIPO_TRANSPORTE_CARRO_ELETRICO, TIPO_TRANSPORTE_CAMINHAO
+from typing import List, Tuple
 import random
 import math
 import copy 
-from typing import List, Tuple
+
 
 default_problems = {
 5: [(733, 251), (706, 87), (546, 97), (562, 49), (576, 253)],

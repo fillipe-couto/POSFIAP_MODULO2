@@ -1,43 +1,12 @@
 # Imports
-from typing import List
-from algoritmos_geneticos import populacao_inicial_aleatoria
+from algoritmos_geneticos import calcular_fitness, populacao_inicial_aleatoria
 from draw_functions import draw_cities, draw_paths, draw_plot
+from parametros import ALTURA_TELA, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
 from utils import imprimir_matriz, indice_para_letra, ler_inteiro_positivo, limpar_console
+from typing import List
 import math
 import pygame
 import random
-
-
-
-# Constantes/macros de configuração
-MIN_CIDADES = 5
-MAX_CIDADES = 15
-MIN_POPULACAO = 25
-MAX_POPULACAO = 100
-LIM_CARRO_ELETRICO = 150
-
-# Constantes/macros de velocidade média dos transportes (em pixels por unidade de tempo)
-VELOC_AVIAO = 480
-VELOC_TREM = 100
-VELOC_CARRO_ELETRICO = 90
-VELOC_CAMINHAO = 60
-
-# Constantes/macros de custo médio dos transportes (em R$ por pixel)
-CUSTO_AVIAO = 6
-CUSTO_TREM = 2
-CUSTO_CARRO_ELETRICO = 3
-CUSTO_CAMINHAO = 4
-
-# Constantes/macros de configuração do Pygame
-LARGURA_TELA = 860
-ALTURA_TELA = 460
-OFFSET_X_GRAFICO = 400
-MARGEM = 30
-COR_BRANCO = (255, 255, 255)
-COR_VERMELHA = (255, 0, 0)
-RAIO = 7
-FPS = 30
-
 
 
 
@@ -58,7 +27,7 @@ if __name__ == "__main__":
     # Definição do número de cidades
     print("1 - DEFINIÇÃO DO NÚMERO DE CIDADES")
     entrada = None
-    numCidades: int
+    numCidades: int = 0
     while entrada is None:
         print(f"Digite um número inteiro positivo maior ou igual a {MIN_CIDADES} e menor ou igual a {MAX_CIDADES}: ", end="", flush=True)
         entrada = ler_inteiro_positivo(MIN_CIDADES, MAX_CIDADES)
@@ -76,7 +45,8 @@ if __name__ == "__main__":
         in zip(
             [indice_para_letra(i) for i in range(numCidades)],
             [(random.randint(OFFSET_X_GRAFICO + MARGEM, LARGURA_TELA - MARGEM), random.randint(MARGEM, ALTURA_TELA - MARGEM)) for _ in range(numCidades)])}
-    print(f"Cidades posicionadas aleatoriamente em um terreno de {LARGURA_TELA - OFFSET_X_GRAFICO - 2 * MARGEM} x {ALTURA_TELA - 2 * MARGEM}:\n{"\n".join(f"{k}: {v}" for k, v in cidades.items())}\n")
+    cidades_str = "\n".join(f"{k}: {v}" for k, v in cidades.items())
+    print(f"Cidades posicionadas aleatoriamente em um terreno de {LARGURA_TELA - OFFSET_X_GRAFICO - 2 * MARGEM} x {ALTURA_TELA - 2 * MARGEM}:\n{cidades_str}\n")
 
 
 
@@ -98,7 +68,7 @@ if __name__ == "__main__":
     # Definindo aleatoriamente rotas possíveis de avião entre as cidades
     print("4 - DEFININDO ALEATORIAMENTE ROTAS UNIDIRECIONAIS POSSÍVEIS DE AVIÃO ENTRE AS CIDADES")
     entrada = None
-    perc_cnx_aviao: int
+    perc_cnx_aviao: int = 0
     while entrada is None:
         print(f"Digite um percentual válido entre 0 e 100 para a proporção de rotas possíveis de avião: ", end="", flush=True)
         entrada = ler_inteiro_positivo(0, 100)
@@ -123,7 +93,7 @@ if __name__ == "__main__":
     # Definindo aleatoriamente rotas possíveis de trem entre as cidades
     print("5 - DEFININDO ALEATORIAMENTE ROTAS BIDIRECIONAIS POSSÍVEIS DE TREM ENTRE AS CIDADES")
     entrada = None
-    perc_cnx_trem: int
+    perc_cnx_trem: int = 0
     while entrada is None:
         print(f"Digite um percentual válido entre 0 e 100 para a proporção de rotas possíveis de trem: ", end="", flush=True)
         entrada = ler_inteiro_positivo(0, 100)
@@ -150,7 +120,7 @@ if __name__ == "__main__":
     # Definição do tamanho da população inicial para o algoritmo genético
     print("6 - DEFINIÇÃO DO TAMANHO DA POPULAÇÃO")
     entrada = None
-    tamPopulacao: int
+    tamPopulacao: int = 0
     while entrada is None:
         print(f"Digite um número inteiro positivo maior ou igual a {MIN_POPULACAO} e menor ou igual a {MAX_POPULACAO}: ", end="", flush=True)
         entrada = ler_inteiro_positivo(MIN_POPULACAO, MAX_POPULACAO)
@@ -165,7 +135,7 @@ if __name__ == "__main__":
     print("Escolha o algoritmo de geração da população inicial:")
     print("1 - Aleatória")
     entrada = None
-    populacao_inicial: List[List[str]]
+    populacao_inicial: List[List[str]] = []
     while entrada is None:
         print("Algoritmo de geração da população inicial: ", end="", flush=True)
         entrada = ler_inteiro_positivo(1, 1)
@@ -176,7 +146,9 @@ if __name__ == "__main__":
             else:
                 # Implementar heurística aqui
                 pass
-    print(f"População inicial gerada com {len(populacao_inicial)} indivíduos:\n{"\n".join(f"{individuo}" for individuo in populacao_inicial)}\n")
+    
+    populacao_inicial_str = "\n".join(f"{individuo}" for individuo in populacao_inicial)
+    print(f"População inicial gerada com {len(populacao_inicial)} indivíduos:\n{populacao_inicial_str}\n")
 
 
 
@@ -186,6 +158,10 @@ if __name__ == "__main__":
     pygame.display.set_caption("PÓS TECH FIAP - Turma 7IADT/Módulo 02 - TSP Solver")
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     clock = pygame.time.Clock()
+
+    for individuo in populacao_inicial:
+        fitness, lista_transportes = calcular_fitness(matrizDistancias, matrizAviao, matrizTrem, individuo)
+        print(f"Indivíduo: {individuo} | Fitness (Custo/Tempo): {fitness} | Transportes: {lista_transportes}")
 
     # Loop de execução
     emExecucao: bool = True
@@ -199,7 +175,7 @@ if __name__ == "__main__":
 
         tela.fill(COR_BRANCO)
         draw_plot(tela, list(range(10)), list(range(10)), y_label="Gráfico de fitness")
-        draw_cities(tela, list(cidades.values()), COR_VERMELHA, RAIO, list(cidades.keys()))
+        draw_cities(tela, list(cidades.values()), list(cidades.keys()))
     
         pygame.display.flip()
         clock.tick(FPS)

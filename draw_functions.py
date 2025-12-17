@@ -4,6 +4,7 @@ Draw utilities for TSP visualizer.
 Uses FigureCanvasAgg.tostring_argb() and converts ARGB -> RGB for Pygame.
 """
 import matplotlib
+from parametros import COR_VERMELHA, RAIO
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -55,8 +56,6 @@ def draw_plot(screen: pygame.Surface, x: list, y: list, x_label: str = 'Generati
 def draw_cities(
         screen: pygame.Surface,
         cities_locations: List[Tuple[int, int]],
-        rgb_color: Tuple[int, int, int],
-        node_radius: int,
         labels: Optional[List[str]] = None,
         font_size: int = 18,
         font_color: Tuple[int, int, int] = (0, 0, 0),
@@ -67,7 +66,7 @@ def draw_cities(
         - label_offset: deslocamento (x,y) em pixels aplicado à posição do label.
         """
         for city_location in cities_locations:
-            pygame.draw.circle(screen, rgb_color, city_location, node_radius)
+            pygame.draw.circle(screen, COR_VERMELHA, city_location, RAIO)
             if labels is not None:
                 pygame.font.init()
                 my_font = pygame.font.SysFont('Arial', font_size, True)
