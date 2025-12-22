@@ -15,17 +15,44 @@ def populacao_inicial_aleatoria(cidades: List[str], tamanho_populacao: int) -> L
 
 
 
-def calcular_fitness(
+def calcular_limites_estimados(matrizDistancias: List[List[float]]) -> Tuple[int, int, int, int]:
+    """
+    Calcula os limites teóricos de tempo e custo para normalização.    
+    Retorna uma tupla com [tempo_min, tempo_max, custo_min, custo_max], onde:
+    1 - tempo_min: considerando todos os trechos feitos de avião;
+    2 - tempo_max: considerando todos os trechos feitos de caminhão;
+    3 - custo_min: considerando todos os trechos feitos de carro elétrico;
+    4 - custo_max: considerando todos os trechos feitos de avião;
+    """
+    numCidades = len(matrizDistancias)
+    distancia_total_entre_cidades = sum(sum(linha) for linha in matrizDistancias) / 2    
+    dist_media_entre_cidades = distancia_total_entre_cidades / (numCidades * (numCidades - 1) / 2)
+    dist_media_rota = dist_media_entre_cidades * numCidades
+    
+    tempo_min = int(dist_media_rota // VELOC_AVIAO)
+    tempo_max = int(dist_media_rota // VELOC_CAMINHAO)    
+    custo_min = int(dist_media_rota * CUSTO_CARRO_ELETRICO)
+    custo_max = int(dist_media_rota * CUSTO_AVIAO)    
+    return tempo_min, tempo_max, custo_min, custo_max
+
+
+
+def calcular_fitness_prioridade_tempo(
     matrizDistancias: List[List[float]],
     matrizAviao: List[List[int]],
     matrizTrem: List[List[int]],
-    individuo: List[str]) -> Tuple[int, List[int]]:
+    individuo: List[str],
+    tempo_min,
+    tempo_max,
+    custo_min,
+    custo_max,
+    pesoTempo: float = 0.5) -> Tuple[List[str], float, List[int]]:
     """
     Calcula o fitness de cada indivíduo na população, preferindo primeiro os veículos mais rápidos:
-    1 - Mede o tempo total (buscando o menor tempo);
+    1 - Mede o tempo total (buscando o menor tempo por transportes mais rápidos);
     2 - Mede o custo total;
-    3 - Calcula a relação entre eles;
-    4 - Retorna a relação custo/tempo e a rota de transportes utilizados;
+    3 - Calcula a relação entre eles ponderada pelo peso do tempo;
+    4 - Retorna a relação tempo*custo ponderada e a rota de transportes utilizados;
     """
     tempo_total:int = 0
     custo_total:int = 0
@@ -55,4 +82,6 @@ def calcular_fitness(
             custo_total += distancia * CUSTO_CAMINHAO
             lista_transportes.append(TIPO_TRANSPORTE_CAMINHAO)
     
-    return custo_total // tempo_total, lista_transportes
+    tempo_norm = (tempo_total - tempo_min) / (tempo_max - tempo_min)    
+    custo_norm = (custo_total - custo_min) / (custo_max - custo_min)    
+    return individuo, tempo_norm * pesoTempo + custo_norm * (1 - pesoTempo), lista_transportes

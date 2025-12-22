@@ -1,6 +1,7 @@
 # Imports
-from algoritmos_geneticos import calcular_fitness, populacao_inicial_aleatoria
+from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados,populacao_inicial_aleatoria
 from draw_functions import draw_cities, draw_paths, draw_plot
+from operator import itemgetter
 from parametros import ALTURA_TELA, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
 from utils import imprimir_matriz, indice_para_letra, ler_inteiro_positivo, limpar_console
 from typing import List
@@ -159,9 +160,19 @@ if __name__ == "__main__":
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     clock = pygame.time.Clock()
 
+    fitness_populacao = []
+    limites_estimados = calcular_limites_estimados(matrizDistancias)
     for individuo in populacao_inicial:
-        fitness, lista_transportes = calcular_fitness(matrizDistancias, matrizAviao, matrizTrem, individuo)
-        print(f"Indivíduo: {individuo} | Fitness (Custo/Tempo): {fitness} | Transportes: {lista_transportes}")
+        fitness_populacao.append(
+            calcular_fitness_prioridade_tempo(
+                matrizDistancias,
+                matrizAviao,
+                matrizTrem,
+                individuo,
+                *limites_estimados))
+    fitness_populacao.sort(key=itemgetter(1), reverse=False)
+    for individuo, fitness, lista_transportes in fitness_populacao:
+        print(f"Indivíduo: {individuo} | Fitness: {fitness:6.3f} | Transportes: {lista_transportes}")
 
     # Loop de execução
     emExecucao: bool = True

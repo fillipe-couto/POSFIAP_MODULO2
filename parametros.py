@@ -10,20 +10,20 @@ TIPO_TRANSPORTE_CARRO_ELETRICO = 3
 TIPO_TRANSPORTE_CAMINHAO = 4
 
 # Constantes/macros de velocidade média dos transportes (em pixels por unidade de tempo)
-VELOC_AVIAO = 480
-VELOC_TREM = 100
-VELOC_CARRO_ELETRICO = 90
-VELOC_CAMINHAO = 60
+VELOC_AVIAO = 250 # 50 V/C
+VELOC_TREM = 80 # 40 V/C
+VELOC_CARRO_ELETRICO = 75 # 75 V/C
+VELOC_CAMINHAO = 60 # 20 V/C
 
 # Constantes/macros de custo médio dos transportes (em R$ por pixel)
-CUSTO_AVIAO = 6
+CUSTO_AVIAO = 5
 CUSTO_TREM = 2
-CUSTO_CARRO_ELETRICO = 3
-CUSTO_CAMINHAO = 4
+CUSTO_CARRO_ELETRICO = 1
+CUSTO_CAMINHAO = 3
 
 # Constantes/macros de configuração do Pygame
-LARGURA_TELA = 860
-ALTURA_TELA = 460
+LARGURA_TELA = 1060
+ALTURA_TELA = 660
 OFFSET_X_GRAFICO = 400
 MARGEM = 30
 COR_BRANCO = (255, 255, 255)
