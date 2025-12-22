@@ -136,43 +136,29 @@ if __name__ == "__main__":
     print("Escolha o algoritmo de geração da população inicial:")
     print("1 - Aleatória")
     entrada = None
-    populacao_inicial: List[List[str]] = []
+    populacao: List[List[str]] = []
     while entrada is None:
         print("Algoritmo de geração da população inicial: ", end="", flush=True)
         entrada = ler_inteiro_positivo(1, 1)
         if entrada is not None:
             if entrada == 1:
-                teste = list(cidades.keys())
-                populacao_inicial = populacao_inicial_aleatoria(teste, tamPopulacao)
+                populacao = populacao_inicial_aleatoria(list(cidades.keys()), tamPopulacao)
             else:
                 # Implementar heurística aqui
                 pass
-    
-    populacao_inicial_str = "\n".join(f"{individuo}" for individuo in populacao_inicial)
-    print(f"População inicial gerada com {len(populacao_inicial)} indivíduos:\n{populacao_inicial_str}\n")
 
 
 
     # Inicializando a solução do problema do caixeiro viajante usando algoritmo genético
-    input("Pressione ENTER para iniciar a solução do problema do caixeiro viajante usando algoritmo genético...")
+    input("\nPressione ENTER para iniciar a solução do problema do caixeiro viajante usando algoritmo genético...\n")
     pygame.init()
     pygame.display.set_caption("PÓS TECH FIAP - Turma 7IADT/Módulo 02 - TSP Solver")
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     clock = pygame.time.Clock()
 
-    fitness_populacao = []
     limites_estimados = calcular_limites_estimados(matrizDistancias)
-    for individuo in populacao_inicial:
-        fitness_populacao.append(
-            calcular_fitness_prioridade_tempo(
-                matrizDistancias,
-                matrizAviao,
-                matrizTrem,
-                individuo,
-                *limites_estimados))
-    fitness_populacao.sort(key=itemgetter(1), reverse=False)
-    for individuo, fitness, lista_transportes in fitness_populacao:
-        print(f"Indivíduo: {individuo} | Fitness: {fitness:6.3f} | Transportes: {lista_transportes}")
+    geracao = 1
+    melhores_solucoes = []
 
     # Loop de execução
     emExecucao: bool = True
@@ -184,14 +170,28 @@ if __name__ == "__main__":
                 if event.key == pygame.K_q:
                     emExecucao = False
 
+        populacao_fitness_trajeto = []
+        for individuo in populacao:
+            populacao_fitness_trajeto.append(
+                calcular_fitness_prioridade_tempo(
+                    matrizDistancias,
+                    matrizAviao,
+                    matrizTrem,
+                    individuo,
+                    *limites_estimados))
+        populacao_fitness_trajeto.sort(key=itemgetter(1), reverse=False)
+        melhores_solucoes.append(populacao_fitness_trajeto[0])
+
         tela.fill(COR_BRANCO)
-        draw_plot(tela, list(range(10)), list(range(10)), y_label="Gráfico de fitness")
+        draw_plot(tela, list(range(len(melhores_solucoes))), [solucao[1] for solucao in melhores_solucoes], y_label="Gráfico de fitness")
         draw_cities(tela, list(cidades.values()), list(cidades.keys()))
-    
         pygame.display.flip()
         clock.tick(FPS)
 
-
+        print(f"Geração {geracao}: Fitness {melhores_solucoes[-1][1]:5.3f} - Trajeto {populacao_fitness_trajeto[0][0]}, Transportes {populacao_fitness_trajeto[0][2]}\r", end="", flush=True)
+        
+        # TODO: Implementar o algoritmo genético completo aqui
+        geracao += 1
 
     # Finalização
     print(f"\n\nFim do módulo \"{__name__}\"\n")
