@@ -2,14 +2,24 @@
 from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados,populacao_inicial_aleatoria
 from draw_functions import draw_cities, draw_paths, draw_plot
 from operator import itemgetter
-from parametros import ALTURA_TELA, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
+from parametros import ALTURA_TELA, COR_AZUL, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
 from utils import imprimir_matriz, indice_para_letra, ler_inteiro_positivo, limpar_console
-from typing import List
+from typing import List, Tuple
 import math
 import pygame
 import random
 
 
+
+# Função auxiliar: imprime a lista de (indivíduo, fitness, transportes) ordenada
+def print_sorted_fitness_trajeto(pop_fitness_trajeto, top_n=None):
+    """
+    Imprime a lista `pop_fitness_trajeto` (lista de tuplas (individuo, fitness, transportes))
+    ordenada do melhor para o pior. Use `top_n` para limitar a saída.
+    """
+    print("\nFitness ordenados (melhor -> pior):")
+    for i, (ind, fit, trans) in enumerate(pop_fitness_trajeto, start=1):
+        print(f"{i:3d}. fitness={fit:.6f} -> individuo={ind} transports={trans}")
 
 # Rotina Prncipal
 if __name__ == "__main__":
@@ -157,8 +167,8 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
 
     limites_estimados = calcular_limites_estimados(matrizDistancias)
-    geracao = 1
-    melhores_solucoes = []
+    geracao = 0
+    melhores_solucoes: List[Tuple[List[str], float, List[int]]] = []
 
     # Loop de execução
     emExecucao: bool = True
@@ -169,8 +179,9 @@ if __name__ == "__main__":
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     emExecucao = False
-
-        populacao_fitness_trajeto = []
+        
+        geracao += 1
+        populacao_fitness_trajeto: List[Tuple[List[str], float, List[int]]] = []
         for individuo in populacao:
             populacao_fitness_trajeto.append(
                 calcular_fitness_prioridade_tempo(
@@ -185,13 +196,19 @@ if __name__ == "__main__":
         tela.fill(COR_BRANCO)
         draw_plot(tela, list(range(len(melhores_solucoes))), [solucao[1] for solucao in melhores_solucoes], y_label="Gráfico de fitness")
         draw_cities(tela, list(cidades.values()), list(cidades.keys()))
+        draw_paths(tela, melhores_solucoes[-1], cidades)
         pygame.display.flip()
         clock.tick(FPS)
 
-        print(f"Geração {geracao}: Fitness {melhores_solucoes[-1][1]:5.3f} - Trajeto {populacao_fitness_trajeto[0][0]}, Transportes {populacao_fitness_trajeto[0][2]}\r", end="", flush=True)
+        print(f"Geração {geracao}: Fitness {melhores_solucoes[-1][1]:5.3f} - Trajeto {melhores_solucoes[-1][0]}, Transportes {melhores_solucoes[-1][2]}\r", end="", flush=True)
         
-        # TODO: Implementar o algoritmo genético completo aqui
-        geracao += 1
+        # ------------------------------------------------------------
+        # Implementação do algoritmo genético: seleção
+        # ------------------------------------------------------------
+
+        # Elitismo: definindo a nova população inicial com os 10% melhores
+        nova_populacao: List[List[str]] = list(populacao_fitness_trajeto[i][0] for i in range(len(populacao_fitness_trajeto) // 10))
+        
 
     # Finalização
     print(f"\n\nFim do módulo \"{__name__}\"\n")

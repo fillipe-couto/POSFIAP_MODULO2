@@ -4,7 +4,7 @@ Draw utilities for TSP visualizer.
 Uses FigureCanvasAgg.tostring_argb() and converts ARGB -> RGB for Pygame.
 """
 import matplotlib
-from parametros import COR_VERMELHA, RAIO
+from parametros import COR_AZUL, COR_CINZA, COR_PRETO, COR_VERDE, COR_VERMELHA, ESPESSURA_AVIAO, ESPESSURA_CAMINHAO, ESPESSURA_CARRO_ELETRICO, ESPESSURA_TREM, RAIO
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -74,13 +74,26 @@ def draw_cities(
                 screen.blit(text_surface, (city_location[0] + label_offset[0], city_location[1] + label_offset[1]))
 
 
-def draw_paths(screen: pygame.Surface, path: List[Tuple[int, int]], rgb_color: Tuple[int, int, int], width: int = 1) -> None:
+def draw_paths(screen: pygame.Surface, path: Tuple[List[str], float, List[int]], cidades: dict[str, Tuple[int, int]]) -> None:
     """
     Draw a path on a Pygame screen as a closed polyline.
     """
     if not path:
         return
-    pygame.draw.lines(screen, rgb_color, True, path, width=width)
+    for i in range(len(path[0])):
+        ponto_atual = cidades[path[0][i]]
+        ponto_proximo = cidades[path[0][(i + 1) % len(path[0])]]
+        match path[2][i]:
+            case 1:  # Avião
+                pygame.draw.line(screen, COR_VERMELHA, ponto_atual, ponto_proximo, ESPESSURA_AVIAO)
+            case 2:  # Trem
+                pygame.draw.line(screen, COR_AZUL, ponto_atual, ponto_proximo, ESPESSURA_TREM)
+            case 3:  # Carro Elétrico
+                pygame.draw.line(screen, COR_VERDE, ponto_atual, ponto_proximo, ESPESSURA_CARRO_ELETRICO)
+            case 4:  # Caminhão
+                pygame.draw.line(screen, COR_CINZA, ponto_atual, ponto_proximo, ESPESSURA_CAMINHAO)
+            case _:  # Desconhecido
+                print(f"{path[2][i]}  -> Transporte desconhecido: desenhando linha preta espessura 1")
 
 
 def draw_text(screen: pygame.Surface, text: str, color: Tuple[int, int, int], position: Optional[Tuple[int, int]] = None, font_size: int = 15) -> None:

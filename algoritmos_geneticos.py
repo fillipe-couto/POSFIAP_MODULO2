@@ -85,3 +85,23 @@ def calcular_fitness_prioridade_tempo(
     tempo_norm = (tempo_total - tempo_min) / (tempo_max - tempo_min)    
     custo_norm = (custo_total - custo_min) / (custo_max - custo_min)    
     return individuo, tempo_norm * pesoTempo + custo_norm * (1 - pesoTempo), lista_transportes
+
+
+
+def selecao_por_torneio(
+    candidatos: List[Tuple[List[str], float, List[int]]],
+    k: int = 3,
+    vencedores = 1) -> List[List[str]]:
+    """
+    Realiza a seleção por torneio para escolher indivíduos da população a ser cruzada.
+    - candidatos: lista possíveis de indivíduos (rotas)"
+    - k: pressão seletiva (número de aspirantes por torneio)
+    - vencedores: número de vencedores a serem selecionados
+    """
+    listaVencedores: List[List[str]] = []
+    if len(candidatos) == 0:
+        return listaVencedores
+    for _ in range(vencedores):
+        competidores = random.sample(candidatos, min(k, 2))
+        listaVencedores.append(min(competidores, key = lambda competidor: competidor[1])[0])
+    return listaVencedores
