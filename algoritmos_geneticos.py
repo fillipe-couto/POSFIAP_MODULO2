@@ -90,18 +90,78 @@ def calcular_fitness_prioridade_tempo(
 
 def selecao_por_torneio(
     candidatos: List[Tuple[List[str], float, List[int]]],
-    k: int = 3,
-    vencedores = 1) -> List[List[str]]:
+    k: int = 3) -> List[str]:
     """
     Realiza a seleção por torneio para escolher indivíduos da população a ser cruzada.
     - candidatos: lista possíveis de indivíduos (rotas)"
     - k: pressão seletiva (número de aspirantes por torneio)
-    - vencedores: número de vencedores a serem selecionados
     """
-    listaVencedores: List[List[str]] = []
     if len(candidatos) == 0:
-        return listaVencedores
-    for _ in range(vencedores):
-        competidores = random.sample(candidatos, min(k, 2))
-        listaVencedores.append(min(competidores, key = lambda competidor: competidor[1])[0])
-    return listaVencedores
+        return None
+
+    competidores = random.sample(candidatos, k)
+    return min(competidores, key = lambda competidor: competidor[1])[0]
+
+
+
+def edge_recombination_crossover(p1: List[str], p2: List[str]) -> Tuple[List[str], List[str]]:
+    """
+    Implementa o cruzamento por recombinação de arestas (Edge Recombination Crossover - ERX) entre dois pais (p1 e p2).
+    Este algoritmo preserva as adjacências dos nós (cidades) dos pais ao gerar os filhos, resultando em um melhor desempenho
+    para problemas de roteamento, como o Problema do Caixeiro Viajante (TSP).
+    Retorna dois filhos resultantes do cruzamento
+    """
+    # Função auxiliar para construir a tabela de adjacências
+    def definir_adjacencias(pai: List[str]) -> dict:
+        adj = {}
+        n = len(pai)
+        for i, v in enumerate(pai):
+            if v not in adj: adj[v] = set()
+            left = pai[(i-1) % n]
+            right = pai[(i+1) % n]
+            adj[v].add(left)
+            adj[v].add(right)
+        return adj
+
+    # Função principal do algoritmo
+    def erx(p1, p2):
+        
+        # Combina as adjacências de ambos os pais
+        adj = {}
+        for p in (p1, p2):
+            for k, v in definir_adjacencias(p).items():
+                adj.setdefault(k, set()).update(v)
+
+        # Inicia a construção do filho a partir de um dos nós aleatoriamente
+        atual = random.choice(p1)
+        filho = []
+        while len(filho) < len(p1):            
+            
+            # Remove o nó atual de todas as listas de adjacência
+            filho.append(atual)
+            for s in adj.values():
+                s.discard(atual)
+
+            # Escolhendo o próximo nó com base na menor lista de adjacência
+            if adj[atual]:
+                candidatos = list(adj[atual])
+                melhor = []
+                lenMelhor = None
+                for c in candidatos:
+                    l = len(adj.get(c, ()))
+                    if lenMelhor is None or l < lenMelhor:
+                        melhor = [c]
+                        lenMelhor = l
+                    elif l == lenMelhor:
+                        melhor.append(c)
+                atual = random.choice(melhor)
+            else:
+                # Seleção aleatória entre os nós restantes
+                remaining = [x for x in p1 if x not in filho]
+                if not remaining:
+                    break
+                atual = random.choice(remaining)
+        return filho
+
+    # Chamada principal da função ERX para gerar dois filhos
+    return erx(p1, p2), erx(p2, p1)

@@ -1,5 +1,5 @@
 # Imports
-from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados,populacao_inicial_aleatoria
+from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados, edge_recombination_crossover, populacao_inicial_aleatoria, selecao_por_torneio
 from draw_functions import draw_cities, draw_paths, draw_plot
 from operator import itemgetter
 from parametros import ALTURA_TELA, COR_AZUL, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
@@ -10,16 +10,6 @@ import pygame
 import random
 
 
-
-# Função auxiliar: imprime a lista de (indivíduo, fitness, transportes) ordenada
-def print_sorted_fitness_trajeto(pop_fitness_trajeto, top_n=None):
-    """
-    Imprime a lista `pop_fitness_trajeto` (lista de tuplas (individuo, fitness, transportes))
-    ordenada do melhor para o pior. Use `top_n` para limitar a saída.
-    """
-    print("\nFitness ordenados (melhor -> pior):")
-    for i, (ind, fit, trans) in enumerate(pop_fitness_trajeto, start=1):
-        print(f"{i:3d}. fitness={fit:.6f} -> individuo={ind} transports={trans}")
 
 # Rotina Prncipal
 if __name__ == "__main__":
@@ -207,8 +197,21 @@ if __name__ == "__main__":
         # ------------------------------------------------------------
 
         # Elitismo: definindo a nova população inicial com os 10% melhores
-        nova_populacao: List[List[str]] = list(populacao_fitness_trajeto[i][0] for i in range(len(populacao_fitness_trajeto) // 10))
+        nova_populacao: List[List[str]] = list(populacao_fitness_trajeto[i][0] for i in range(tamPopulacao // 10))
+
+        # ------------------------------------------------------------
+        # Implementação do algoritmo genético: cruzamento
+        # - Utiliza toneiro para selecionar os pais;
+        # - Utiliza Edge Recombination Crossover (ERX) para gerar os filhos;
+        # ------------------------------------------------------------
+        while len(nova_populacao) < tamPopulacao:
+            nova_populacao.extend(
+                edge_recombination_crossover(
+                    selecao_por_torneio(populacao_fitness_trajeto),
+                    selecao_por_torneio(populacao_fitness_trajeto)))
         
+        # Finalizando esta geração, definindo a população para a próxima geração
+        populacao = nova_populacao[:tamPopulacao]        
 
     # Finalização
     print(f"\n\nFim do módulo \"{__name__}\"\n")
