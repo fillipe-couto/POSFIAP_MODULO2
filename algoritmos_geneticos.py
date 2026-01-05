@@ -207,38 +207,7 @@ def mutacao_2opt(individuo: List[str]) -> List[str]:
 
 
 
-# def mutacao_or_opt(individuo: List[str], taxa_mutacao: float = 0.1) -> List[str]:
-#     """
-#     Mutação Or-opt: move um segmento de 1 a 3 cidades consecutivas para outra posição.
-#     - individuo: rota a ser mutada
-#     - taxa_mutacao: probabilidade de ocorrer a mutação
-#     """
-#     if random.random() > taxa_mutacao:
-#         return individuo
-    
-#     mutante = individuo.copy()
-#     n = len(mutante)
-    
-#     # Tamanho do segmento a mover (1, 2 ou 3 cidades)
-#     tam_segmento = random.randint(1, min(3, n - 1))
-    
-#     # Posição inicial do segmento
-#     pos_inicial = random.randint(0, n - tam_segmento)
-    
-#     # Remove o segmento
-#     segmento = mutante[pos_inicial:pos_inicial + tam_segmento]
-#     del mutante[pos_inicial:pos_inicial + tam_segmento]
-    
-#     # Insere em nova posição
-#     nova_pos = random.randint(0, len(mutante))
-#     for i, cidade in enumerate(segmento):
-#         mutante.insert(nova_pos + i, cidade)
-    
-#     return mutante
-
-
-
-def aplicar_mutacao(individuo: List[str]) -> List[str]:
+def aplicar_mutacoes(individuo: List[str]) -> List[str]:
     """
     Aplica um operador de mutação aleatoriamente selecionado
     """

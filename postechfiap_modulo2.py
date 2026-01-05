@@ -1,5 +1,5 @@
 # Imports
-from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados, edge_recombination_crossover, populacao_inicial_aleatoria, selecao_por_torneio, aplicar_mutacao
+from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados, edge_recombination_crossover, populacao_inicial_aleatoria, selecao_por_torneio, aplicar_mutacoes
 from draw_functions import draw_cities, draw_paths, draw_plot
 from operator import itemgetter
 from parametros import ALTURA_TELA, COR_AZUL, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
@@ -214,7 +214,7 @@ if __name__ == "__main__":
         # - Percorre a nova população aplicando mutação na metade inferior dos indivíduos
         # ------------------------------------------------------------
         for i in range(len(nova_populacao) // 2, len(nova_populacao)):
-            nova_populacao[i] = aplicar_mutacao(nova_populacao[i])
+            nova_populacao[i] = aplicar_mutacoes(nova_populacao[i])
 
         # Finalizando esta geração, definindo a população para a próxima geração
         populacao = nova_populacao[:tamPopulacao]        
