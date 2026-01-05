@@ -1,4 +1,4 @@
-from parametros import LIM_CARRO_ELETRICO
+from parametros import LIM_CARRO_ELETRICO, PROB_MUTACAO
 from parametros import TIPO_TRANSPORTE_AVIAO, TIPO_TRANSPORTE_TREM, TIPO_TRANSPORTE_CARRO_ELETRICO, TIPO_TRANSPORTE_CAMINHAO
 from parametros import VELOC_AVIAO, VELOC_TREM, VELOC_CARRO_ELETRICO, VELOC_CAMINHAO
 from parametros import CUSTO_AVIAO, CUSTO_TREM, CUSTO_CARRO_ELETRICO, CUSTO_CAMINHAO
@@ -46,7 +46,7 @@ def calcular_fitness_prioridade_tempo(
     tempo_max,
     custo_min,
     custo_max,
-    pesoTempo: float = 0.5) -> Tuple[List[str], float, List[int]]:
+    pesoTempo: float = 0.4) -> Tuple[List[str], float, List[int]]:
     """
     Calcula o fitness de cada indivíduo na população, preferindo primeiro os veículos mais rápidos:
     1 - Mede o tempo total (buscando o menor tempo por transportes mais rápidos);
@@ -90,7 +90,7 @@ def calcular_fitness_prioridade_tempo(
 
 def selecao_por_torneio(
     candidatos: List[Tuple[List[str], float, List[int]]],
-    k: int = 3) -> List[str]:
+    k: int = 3) -> List[str] | None:
     """
     Realiza a seleção por torneio para escolher indivíduos da população a ser cruzada.
     - candidatos: lista possíveis de indivíduos (rotas)"
@@ -165,3 +165,92 @@ def edge_recombination_crossover(p1: List[str], p2: List[str]) -> Tuple[List[str
 
     # Chamada principal da função ERX para gerar dois filhos
     return erx(p1, p2), erx(p2, p1)
+
+
+
+def mutacao_swap(individuo: List[str]) -> List[str]:
+    """
+    Mutação por troca (Swap Mutation): troca dois genes (cidades) de posição aleatoriamente.
+    """    
+    mutante = individuo.copy()
+    n = len(mutante)
+    i, j = random.sample(range(n), 2)
+    mutante[i], mutante[j] = mutante[j], mutante[i]
+    return mutante
+
+
+
+def mutacao_inversao(individuo: List[str]) -> List[str]:
+    """
+    Mutação por inversão (Inversion Mutation): inverte a ordem de um segmento da rota.
+    Esta mutação é eficaz para o TSP pois preserva a maioria das adjacências.
+    """    
+    mutante = individuo.copy()
+    n = len(mutante)
+    i, j = sorted(random.sample(range(n), 2))
+    mutante[i:j+1] = mutante[i:j+1][::-1]
+    return mutante
+
+
+
+def mutacao_2opt(individuo: List[str]) -> List[str]:
+    """
+    Mutação 2-opt: remove duas arestas e reconecta a rota de forma diferente.
+    Esta mutação é eficaz para o TSP pois preserva a maioria das adjacências.
+    """    
+    mutante = individuo.copy()
+    n = len(mutante)
+    i = random.randint(0, n - 2)
+    j = random.randint(i + 1, n - 1)
+    mutante[i:j+1] = mutante[i:j+1][::-1]
+    return mutante
+
+
+
+# def mutacao_or_opt(individuo: List[str], taxa_mutacao: float = 0.1) -> List[str]:
+#     """
+#     Mutação Or-opt: move um segmento de 1 a 3 cidades consecutivas para outra posição.
+#     - individuo: rota a ser mutada
+#     - taxa_mutacao: probabilidade de ocorrer a mutação
+#     """
+#     if random.random() > taxa_mutacao:
+#         return individuo
+    
+#     mutante = individuo.copy()
+#     n = len(mutante)
+    
+#     # Tamanho do segmento a mover (1, 2 ou 3 cidades)
+#     tam_segmento = random.randint(1, min(3, n - 1))
+    
+#     # Posição inicial do segmento
+#     pos_inicial = random.randint(0, n - tam_segmento)
+    
+#     # Remove o segmento
+#     segmento = mutante[pos_inicial:pos_inicial + tam_segmento]
+#     del mutante[pos_inicial:pos_inicial + tam_segmento]
+    
+#     # Insere em nova posição
+#     nova_pos = random.randint(0, len(mutante))
+#     for i, cidade in enumerate(segmento):
+#         mutante.insert(nova_pos + i, cidade)
+    
+#     return mutante
+
+
+
+def aplicar_mutacao(individuo: List[str]) -> List[str]:
+    """
+    Aplica um operador de mutação aleatoriamente selecionado
+    """
+    if random.random() > PROB_MUTACAO:
+        return individuo
+    
+    match random.randint(1, 3):
+        case 1:
+            return mutacao_swap(individuo)
+        case 2:
+            return mutacao_inversao(individuo)
+        case 3:
+            return mutacao_2opt(individuo)
+        case _:
+            return individuo    

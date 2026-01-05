@@ -1,5 +1,5 @@
 # Imports
-from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados, edge_recombination_crossover, populacao_inicial_aleatoria, selecao_por_torneio
+from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados, edge_recombination_crossover, populacao_inicial_aleatoria, selecao_por_torneio, aplicar_mutacao
 from draw_functions import draw_cities, draw_paths, draw_plot
 from operator import itemgetter
 from parametros import ALTURA_TELA, COR_AZUL, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
@@ -194,9 +194,8 @@ if __name__ == "__main__":
         
         # ------------------------------------------------------------
         # Implementação do algoritmo genético: seleção
+        # - Utiliza elitismo para iniciar a nova população com os 10% melhores resultados
         # ------------------------------------------------------------
-
-        # Elitismo: definindo a nova população inicial com os 10% melhores
         nova_populacao: List[List[str]] = list(populacao_fitness_trajeto[i][0] for i in range(tamPopulacao // 10))
 
         # ------------------------------------------------------------
@@ -205,11 +204,18 @@ if __name__ == "__main__":
         # - Utiliza Edge Recombination Crossover (ERX) para gerar os filhos;
         # ------------------------------------------------------------
         while len(nova_populacao) < tamPopulacao:
-            nova_populacao.extend(
-                edge_recombination_crossover(
-                    selecao_por_torneio(populacao_fitness_trajeto),
-                    selecao_por_torneio(populacao_fitness_trajeto)))
+            p1 = selecao_por_torneio(populacao_fitness_trajeto)
+            p2 = selecao_por_torneio(populacao_fitness_trajeto)
+            if p1 is not None and p2 is not None:
+                nova_populacao.extend(edge_recombination_crossover(p1, p2))
         
+        # ------------------------------------------------------------
+        # Implementação do algoritmo genético: mutação
+        # - Percorre a nova população aplicando mutação na metade inferior dos indivíduos
+        # ------------------------------------------------------------
+        for i in range(len(nova_populacao) // 2, len(nova_populacao)):
+            nova_populacao[i] = aplicar_mutacao(nova_populacao[i])
+
         # Finalizando esta geração, definindo a população para a próxima geração
         populacao = nova_populacao[:tamPopulacao]        
 
