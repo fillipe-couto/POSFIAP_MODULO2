@@ -1,6 +1,6 @@
 # Constantes/macros de configuração
 MIN_CIDADES = 5
-MAX_CIDADES = 15
+MAX_CIDADES = 25
 MIN_POPULACAO = 25
 MAX_POPULACAO = 100
 LIM_CARRO_ELETRICO = 120
@@ -8,7 +8,8 @@ TIPO_TRANSPORTE_AVIAO = 1
 TIPO_TRANSPORTE_TREM = 2
 TIPO_TRANSPORTE_CARRO_ELETRICO = 3
 TIPO_TRANSPORTE_CAMINHAO = 4
-PROB_MUTACAO = 0.2
+PESO_TEMPO = 0.3
+PROB_MUTACAO = 0.5
 
 # Constantes/macros de velocidade média dos transportes (em pixels por unidade de tempo)
 VELOC_AVIAO = 250 # 50 V/C

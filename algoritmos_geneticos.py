@@ -1,4 +1,4 @@
-from parametros import LIM_CARRO_ELETRICO, PROB_MUTACAO
+from parametros import LIM_CARRO_ELETRICO, PESO_TEMPO, PROB_MUTACAO
 from parametros import TIPO_TRANSPORTE_AVIAO, TIPO_TRANSPORTE_TREM, TIPO_TRANSPORTE_CARRO_ELETRICO, TIPO_TRANSPORTE_CAMINHAO
 from parametros import VELOC_AVIAO, VELOC_TREM, VELOC_CARRO_ELETRICO, VELOC_CAMINHAO
 from parametros import CUSTO_AVIAO, CUSTO_TREM, CUSTO_CARRO_ELETRICO, CUSTO_CAMINHAO
@@ -46,7 +46,7 @@ def calcular_fitness_prioridade_tempo(
     tempo_max,
     custo_min,
     custo_max,
-    pesoTempo: float = 0.4) -> Tuple[List[str], float, List[int]]:
+    pesoTempo: float = PESO_TEMPO) -> Tuple[List[str], float, List[int]]:
     """
     Calcula o fitness de cada indivíduo na população, preferindo primeiro os veículos mais rápidos:
     1 - Mede o tempo total (buscando o menor tempo por transportes mais rápidos);
