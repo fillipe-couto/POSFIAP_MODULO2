@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        .header .subtitle {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .section p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+        
+        .section ul {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .section li {
+            margin: 8px 0;
+        }
+        
+        .metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #764ba2;
+        }
+        
+        .metric-card .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ titulo }}</h1>
+        <p class="subtitle">PÓS-TECH FIAP - Módulo 02 - IA para DEV - Turma 7IADT</p>
+        <p class="subtitle">Gerado em: {{ data_hora }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>📊 Resumo Executivo</h2>
+        <p>{{ resumo_executivo }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>⚙️ Configuração do Algoritmo</h2>
+        <ul>
+        {% for item in configuracao %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2>📈 Métricas Principais</h2>
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="label">Cidades</div>
+                <div class="value">{{ num_cidades }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Gerações</div>
+                <div class="value">{{ total_geracoes }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Fitness Final</div>
+                <div class="value">{{ melhor_fitness }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Tempo (s)</div>
+                <div class="value">{{ tempo_execucao }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>🔍 Análise do Resultado</h2>
+        <ul>
+        {% for item in analise_resultado %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2>🗺️ Detalhes da Solução</h2>
+        <ul>
+        {% for item in detalhes_solucao %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+        <p><strong>Trajeto completo:</strong> <code>{{ trajeto }}</code></p>
+        <p><strong>Transportes utilizados:</strong> {{ transportes }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>💡 Conclusões e Recomendações</h2>
+        <ul>
+        {% for item in conclusoes %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="footer">
+        <p>Relatório gerado automaticamente pelo sistema TSP Solver</p>
+        <p>Critério de parada: {{ criterio_parada }}</p>
+    </div>
+</body>
+</html>

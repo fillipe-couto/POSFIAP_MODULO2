@@ -1,15 +1,45 @@
 # Imports
-from algoritmos_geneticos import calcular_fitness_prioridade_tempo, calcular_limites_estimados, edge_recombination_crossover, populacao_inicial_aleatoria, selecao_por_torneio, aplicar_mutacoes
-from draw_functions import draw_cities, draw_paths, draw_plot
-from operator import itemgetter
-from parametros import ALTURA_TELA, COR_AZUL, COR_BRANCO, FPS, LARGURA_TELA, MARGEM, MAX_CIDADES, MAX_POPULACAO, MIN_CIDADES, MIN_POPULACAO, OFFSET_X_GRAFICO
-from utils import imprimir_matriz, indice_para_letra, ler_inteiro_positivo, limpar_console
-from typing import List, Tuple
 import math
-import pygame
+import os
 import random
+import time
+from operator import itemgetter
+from typing import List, Tuple
 
+import pygame
 
+from algoritmos_geneticos import (
+    aplicar_mutacoes,
+    calcular_fitness_prioridade_tempo,
+    calcular_limites_estimados,
+    edge_recombination_crossover,
+    populacao_inicial_aleatoria,
+    selecao_por_torneio,
+)
+from draw_functions import draw_cities, draw_paths, draw_plot
+from parametros import (
+    ALTURA_TELA,
+    COR_BRANCO,
+    FPS,
+    LARGURA_TELA,
+    MARGEM,
+    MAX_CIDADES,
+    MAX_GERACOES_SEM_MELHORIA,
+    MAX_MAX_GERACOES,
+    MAX_POPULACAO,
+    MIN_CIDADES,
+    MIN_GERACOES_SEM_MELHORIA,
+    MIN_MAX_GERACOES,
+    MIN_POPULACAO,
+    OFFSET_X_GRAFICO,
+)
+from relatorio import gerar_relatorio_pdf
+from utils import (
+    imprimir_matriz,
+    indice_para_letra,
+    ler_inteiro_positivo,
+    limpar_console,
+)
 
 # Rotina Prncipal
 if __name__ == "__main__":
@@ -149,8 +179,46 @@ if __name__ == "__main__":
 
 
 
+    # Definição dos critérios de parada
+    print("\n8 - DEFINIÇÃO DOS CRITÉRIOS DE PARADA")
+    print("Escolha os critérios de parada para o algoritmo genético:")
+    print("1 - Número máximo de gerações")
+    print("2 - Convergência (gerações sem melhoria)")
+    print("3 - Ambos (o que ocorrer primeiro)")
+    entrada = None
+    criterio_parada: int = 0
+    while entrada is None:
+        print("Critério de parada: ", end="", flush=True)
+        entrada = ler_inteiro_positivo(1, 3)
+        if entrada is not None:
+            criterio_parada = entrada
+    
+    max_geracoes: int = 0
+    max_geracoes_sem_melhoria: int = 0
+    
+    if criterio_parada in [1, 3]:
+        entrada = None
+        while entrada is None:
+            print(f"Digite o número máximo de gerações ({MIN_MAX_GERACOES}-{MAX_MAX_GERACOES}): ", end="", flush=True)
+            entrada = ler_inteiro_positivo(MIN_MAX_GERACOES, MAX_MAX_GERACOES)
+            if entrada is not None:
+                max_geracoes = entrada
+                print(f"Número máximo de gerações definido para {max_geracoes}.")
+    
+    if criterio_parada in [2, 3]:
+        entrada = None
+        while entrada is None:
+            print(f"Digite o número máximo de gerações sem melhoria ({MIN_GERACOES_SEM_MELHORIA}-{MAX_GERACOES_SEM_MELHORIA}): ", end="", flush=True)
+            entrada = ler_inteiro_positivo(MIN_GERACOES_SEM_MELHORIA, MAX_GERACOES_SEM_MELHORIA)
+            if entrada is not None:
+                max_geracoes_sem_melhoria = entrada
+                print(f"Número máximo de gerações sem melhoria definido para {max_geracoes_sem_melhoria}.")
+
+
+
     # Inicializando a solução do problema do caixeiro viajante usando algoritmo genético
     input("\nPressione ENTER para iniciar a solução do problema do caixeiro viajante usando algoritmo genético...\n")
+    tempo_inicio = time.time()
     pygame.init()
     pygame.display.set_caption("PÓS TECH FIAP - Turma 7IADT/Módulo 02 - TSP Solver")
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
@@ -159,6 +227,9 @@ if __name__ == "__main__":
     limites_estimados = calcular_limites_estimados(matrizDistancias)
     geracao = 0
     melhores_solucoes: List[Tuple[List[str], float, List[int]]] = []
+    melhor_fitness: float = float('inf')
+    geracoes_sem_melhoria: int = 0
+    criterio_atingido: str = ""
 
     # Loop de execução
     emExecucao: bool = True
@@ -182,6 +253,33 @@ if __name__ == "__main__":
                     *limites_estimados))
         populacao_fitness_trajeto.sort(key=itemgetter(1), reverse=False)
         melhores_solucoes.append(populacao_fitness_trajeto[0])
+        
+        # Verificar critérios de convergência
+        fitness_atual = populacao_fitness_trajeto[0][1]
+        if fitness_atual < melhor_fitness:
+            melhor_fitness = fitness_atual
+            geracoes_sem_melhoria = 0
+        else:
+            geracoes_sem_melhoria += 1
+        
+        # Verificar critérios de parada
+        parar_execucao = False
+        if criterio_parada == 1 and geracao >= max_geracoes:
+            parar_execucao = True
+            criterio_atingido = f"Número máximo de gerações atingido ({max_geracoes})"
+        elif criterio_parada == 2 and geracoes_sem_melhoria >= max_geracoes_sem_melhoria:
+            parar_execucao = True
+            criterio_atingido = f"Convergência atingida ({max_geracoes_sem_melhoria} gerações sem melhoria)"
+        elif criterio_parada == 3:
+            if geracao >= max_geracoes:
+                parar_execucao = True
+                criterio_atingido = f"Número máximo de gerações atingido ({max_geracoes})"
+            elif geracoes_sem_melhoria >= max_geracoes_sem_melhoria:
+                parar_execucao = True
+                criterio_atingido = f"Convergência atingida ({max_geracoes_sem_melhoria} gerações sem melhoria)"
+        
+        if parar_execucao:
+            emExecucao = False
 
         tela.fill(COR_BRANCO)
         draw_plot(tela, list(range(len(melhores_solucoes))), [solucao[1] for solucao in melhores_solucoes], y_label="Gráfico de fitness")
@@ -190,7 +288,7 @@ if __name__ == "__main__":
         pygame.display.flip()
         clock.tick(FPS)
 
-        print(f"Geração {geracao}: Fitness {melhores_solucoes[-1][1]:5.3f} - Trajeto {melhores_solucoes[-1][0]}, Transportes {melhores_solucoes[-1][2]}\r", end="", flush=True)
+        print(f"Geração {geracao}: Fitness {melhores_solucoes[-1][1]:5.3f} (Sem melhoria: {geracoes_sem_melhoria}) - Trajeto {melhores_solucoes[-1][0]}, Transportes {melhores_solucoes[-1][2]}\r", end="", flush=True)
         
         # ------------------------------------------------------------
         # Implementação do algoritmo genético: seleção
@@ -220,4 +318,39 @@ if __name__ == "__main__":
         populacao = nova_populacao[:tamPopulacao]        
 
     # Finalização
-    print(f"\n\nFim do módulo \"{__name__}\"\n")
+    tempo_fim = time.time()
+    tempo_execucao = tempo_fim - tempo_inicio
+    
+    print(f"\n\n{'='*80}")
+    print(f"EXECUÇÃO FINALIZADA")
+    print(f"{'='*80}")
+    if criterio_atingido:
+        print(f"Critério de parada: {criterio_atingido}")
+    print(f"Total de gerações: {geracao}")
+    print(f"Melhor fitness encontrado: {melhor_fitness:.3f}")
+    print(f"Melhor trajeto: {melhores_solucoes[-1][0]}")
+    print(f"Transportes utilizados: {melhores_solucoes[-1][2]}")
+    print(f"Tempo de execução: {tempo_execucao:.2f}s")
+    print(f"{'='*80}")
+    
+    # Gerar relatório em PDF
+    try:
+        diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+        caminho_pdf = gerar_relatorio_pdf(
+            num_cidades=numCidades,
+            cidades=cidades,
+            tamanho_populacao=tamPopulacao,
+            total_geracoes=geracao,
+            criterio_parada=criterio_atingido if criterio_atingido else "Manual",
+            melhor_fitness=melhor_fitness,
+            melhor_trajeto=melhores_solucoes[-1][0],
+            transportes=melhores_solucoes[-1][2],
+            tempo_execucao=tempo_execucao,
+            diretorio_saida=diretorio_atual
+        )
+        print(f"\n✓ Relatório PDF gerado e aberto: {os.path.basename(caminho_pdf)}")
+    except Exception as e:
+        print(f"\n Erro ao gerar relatório PDF: {e}")
+        print("Verifique se o arquivo .env está configurado com sua chave da OpenAI.")
+    
+    print(f"\nFim do módulo \"{__name__}\"\n")
