@@ -100,6 +100,24 @@
             margin-top: 5px;
         }
         
+        .solution-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+        
+        .solution-box h3 {
+            margin-top: 0;
+            color: #28a745;
+            font-size: 16px;
+        }
+        
+        .solution-box p {
+            margin: 5px 0;
+        }
+        
         .footer {
             margin-top: 40px;
             padding-top: 20px;
@@ -109,18 +127,27 @@
             font-size: 12px;
         }
         
-        .highlight {
-            background: #fff3cd;
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
-        
         code {
             background: #f4f4f4;
             padding: 2px 6px;
             border-radius: 3px;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 13px;
+            color: #d63384;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .badge-llm {
+            background: #e7f3ff;
+            color: #0066cc;
         }
     </style>
 </head>
@@ -131,74 +158,94 @@
         <p class="subtitle">Gerado em: {{ data_hora }}</p>
     </div>
     
+    <!-- Resumo Executivo (LLM) -->
     <div class="section">
-        <h2>📊 Resumo Executivo</h2>
+        <h2>📊 Resumo Executivo <span class="badge badge-llm">Gerado por IA</span></h2>
         <p>{{ resumo_executivo }}</p>
     </div>
     
+    <!-- Configuração do Algoritmo (Dados Técnicos) -->
     <div class="section">
         <h2>⚙️ Configuração do Algoritmo</h2>
-        <ul>
-        {% for item in configuracao %}
-            <li>{{ item }}</li>
-        {% endfor %}
-        </ul>
-    </div>
-    
-    <div class="section">
-        <h2>📈 Métricas Principais</h2>
         <div class="metrics">
             <div class="metric-card">
                 <div class="label">Cidades</div>
                 <div class="value">{{ num_cidades }}</div>
             </div>
             <div class="metric-card">
-                <div class="label">Gerações</div>
-                <div class="value">{{ total_geracoes }}</div>
+                <div class="label">População</div>
+                <div class="value">{{ tamanho_populacao }}</div>
             </div>
             <div class="metric-card">
-                <div class="label">Fitness Final</div>
-                <div class="value">{{ melhor_fitness }}</div>
+                <div class="label">Gerações</div>
+                <div class="value">{{ total_geracoes }}</div>
             </div>
             <div class="metric-card">
                 <div class="label">Tempo (s)</div>
                 <div class="value">{{ tempo_execucao }}</div>
             </div>
         </div>
+        <p><strong>Critério de parada:</strong> {{ criterio_parada }}</p>
     </div>
     
+    <!-- Solução Encontrada (Dados Técnicos) -->
     <div class="section">
-        <h2>🔍 Análise do Resultado</h2>
+        <h2>🗺️ Solução Encontrada</h2>
+        <div class="solution-box">
+            <h3>Métricas da Solução</h3>
+            <p><strong>Fitness:</strong> {{ melhor_fitness }}</p>
+            <p><strong>Número de trechos:</strong> {{ num_trechos }}</p>
+            <p><strong>Transportes utilizados:</strong> {{ transportes }}</p>
+        </div>
+        <div class="solution-box">
+            <h3>Trajeto Completo</h3>
+            <p><code>{{ trajeto }}</code></p>
+        </div>
+    </div>
+    
+    <!-- Análise de Convergência (LLM) -->
+    <div class="section">
+        <h2>📈 Análise de Convergência <span class="badge badge-llm">Gerado por IA</span></h2>
         <ul>
-        {% for item in analise_resultado %}
+        {% for item in analise_convergencia %}
             <li>{{ item }}</li>
         {% endfor %}
         </ul>
     </div>
     
+    <!-- Análise da Solução (LLM) -->
     <div class="section">
-        <h2>🗺️ Detalhes da Solução</h2>
+        <h2>🔍 Análise da Solução <span class="badge badge-llm">Gerado por IA</span></h2>
         <ul>
-        {% for item in detalhes_solucao %}
+        {% for item in analise_solucao %}
             <li>{{ item }}</li>
         {% endfor %}
         </ul>
-        <p><strong>Trajeto completo:</strong> <code>{{ trajeto }}</code></p>
-        <p><strong>Transportes utilizados:</strong> {{ transportes }}</p>
     </div>
     
+    <!-- Insights Técnicos (LLM) -->
     <div class="section">
-        <h2>💡 Conclusões e Recomendações</h2>
+        <h2>💡 Insights Técnicos <span class="badge badge-llm">Gerado por IA</span></h2>
         <ul>
-        {% for item in conclusoes %}
+        {% for item in insights_tecnicos %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Recomendações (LLM) -->
+    <div class="section">
+        <h2>🎯 Recomendações <span class="badge badge-llm">Gerado por IA</span></h2>
+        <ul>
+        {% for item in recomendacoes %}
             <li>{{ item }}</li>
         {% endfor %}
         </ul>
     </div>
     
     <div class="footer">
-        <p>Relatório gerado automaticamente pelo sistema TSP Solver</p>
-        <p>Critério de parada: {{ criterio_parada }}</p>
+        <p><strong>Relatório gerado automaticamente pelo sistema TSP Solver</strong></p>
+        <p>Análise inteligente: GPT-4o-mini - OpenAI</p>
     </div>
 </body>
 </html>

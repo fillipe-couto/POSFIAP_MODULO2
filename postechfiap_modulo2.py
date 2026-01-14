@@ -58,13 +58,13 @@ if __name__ == "__main__":
     # Definição do número de cidades
     print("1 - DEFINIÇÃO DO NÚMERO DE CIDADES")
     entrada = None
-    numCidades: int = 0
+    num_cidades: int = 0
     while entrada is None:
         print(f"Digite um número inteiro positivo maior ou igual a {MIN_CIDADES} e menor ou igual a {MAX_CIDADES}: ", end="", flush=True)
         entrada = ler_inteiro_positivo(MIN_CIDADES, MAX_CIDADES)
         if entrada is not None:
-            numCidades = entrada
-            print(f"Número de cidades definido para {numCidades}.\n")
+            num_cidades = entrada
+            print(f"Número de cidades definido para {num_cidades}.\n")
 
 
 
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         cidade: posicao
         for cidade, posicao
         in zip(
-            [indice_para_letra(i) for i in range(numCidades)],
-            [(random.randint(OFFSET_X_GRAFICO + MARGEM, LARGURA_TELA - MARGEM), random.randint(MARGEM, ALTURA_TELA - MARGEM)) for _ in range(numCidades)])}
+            [indice_para_letra(i) for i in range(num_cidades)],
+            [(random.randint(OFFSET_X_GRAFICO + MARGEM, LARGURA_TELA - MARGEM), random.randint(MARGEM, ALTURA_TELA - MARGEM)) for _ in range(num_cidades)])}
     cidades_str = "\n".join(f"{k}: {v}" for k, v in cidades.items())
     print(f"Cidades posicionadas aleatoriamente em um terreno de {LARGURA_TELA - OFFSET_X_GRAFICO - 2 * MARGEM} x {ALTURA_TELA - 2 * MARGEM}:\n{cidades_str}\n")
 
@@ -83,16 +83,16 @@ if __name__ == "__main__":
 
     # Calculando a distância euclidiana de cada par de cidades para montar a matriz de distâncias
     print("3 - DEFININDO MATRIZ DE DISTÂNCIAS ENTRE AS CIDADES")
-    matrizDistancias = [[0.0 for _ in range(numCidades)] for _ in range(numCidades)]
-    for i in range(numCidades):
+    matriz_distancias = [[0.0 for _ in range(num_cidades)] for _ in range(num_cidades)]
+    for i in range(num_cidades):
         xi, yi = cidades[indice_para_letra(i)]
-        for j in range(i + 1, numCidades):
+        for j in range(i + 1, num_cidades):
             xj, yj = cidades[indice_para_letra(j)]
             d = math.hypot(xi - xj, yi - yj)
-            matrizDistancias[i][j] = d
-            matrizDistancias[j][i] = d
+            matriz_distancias[i][j] = d
+            matriz_distancias[j][i] = d
     print("Matriz de distâncias calculada: \n")
-    imprimir_matriz(matrizDistancias)
+    imprimir_matriz(matriz_distancias)
 
 
 
@@ -105,19 +105,19 @@ if __name__ == "__main__":
         entrada = ler_inteiro_positivo(0, 100)
         if entrada is not None:
             perc_cnx_aviao = entrada
-    qtd_cnx_aviao = (numCidades * (numCidades - 1)) * perc_cnx_aviao // 100
+    qtd_cnx_aviao = (num_cidades * (num_cidades - 1)) * perc_cnx_aviao // 100
     print(f"Percentual de rotas de avião definido para {perc_cnx_aviao}%, resultando em {qtd_cnx_aviao} rotas unidirecionais possíveis.\n")
-    vetor_rotas_aviao = list(range((numCidades * (numCidades - 1))))
+    vetor_rotas_aviao = list(range((num_cidades * (num_cidades - 1))))
     rotas_aviao = sorted(random.sample(vetor_rotas_aviao, k = qtd_cnx_aviao))
-    matrizAviao = [[0 for _ in range(numCidades)] for _ in range(numCidades)]
+    matriz_aviao = [[0 for _ in range(num_cidades)] for _ in range(num_cidades)]
     for rota in rotas_aviao:
-        xma = rota // (numCidades - 1)
-        yma = rota % (numCidades - 1)
+        xma = rota // (num_cidades - 1)
+        yma = rota % (num_cidades - 1)
         if yma >= xma:
             yma += 1
-        matrizAviao[xma][yma] = 1
+        matriz_aviao[xma][yma] = 1
     print("Matriz de rotas de avião: \n")
-    imprimir_matriz(matrizAviao)
+    imprimir_matriz(matriz_aviao)
 
 
 
@@ -130,34 +130,34 @@ if __name__ == "__main__":
         entrada = ler_inteiro_positivo(0, 100)
         if entrada is not None:
             perc_cnx_trem = entrada
-    qtd_cnx_trem = (numCidades * (numCidades - 1) // 2) * perc_cnx_trem // 100
+    qtd_cnx_trem = (num_cidades * (num_cidades - 1) // 2) * perc_cnx_trem // 100
     print(f"Percentual de rotas de trem definido para {perc_cnx_trem}%, resultando em {qtd_cnx_trem} rotas bidirecionais possíveis.\n")
-    vetor_rotas_trem = list(range((numCidades * (numCidades - 1) // 2)))
+    vetor_rotas_trem = list(range((num_cidades * (num_cidades - 1) // 2)))
     rotas_trem = sorted(random.sample(vetor_rotas_trem, k = qtd_cnx_trem))
-    matrizTrem = [[0 for _ in range(numCidades)] for _ in range(numCidades)]
+    matriz_trem = [[0 for _ in range(num_cidades)] for _ in range(num_cidades)]
     ymt, controle = 0, 0
     for rota in rotas_trem:
-        while rota >= controle + (numCidades - ymt - 1):
-            controle += (numCidades - ymt - 1)
+        while rota >= controle + (num_cidades - ymt - 1):
+            controle += (num_cidades - ymt - 1)
             ymt += 1
         xmt = rota - controle + ymt + 1
-        matrizTrem[xmt][ymt] = 1
-        matrizTrem[ymt][xmt] = 1
+        matriz_trem[xmt][ymt] = 1
+        matriz_trem[ymt][xmt] = 1
     print("Matriz de rotas de trem: \n")
-    imprimir_matriz(matrizTrem)
+    imprimir_matriz(matriz_trem)
 
 
 
     # Definição do tamanho da população inicial para o algoritmo genético
     print("6 - DEFINIÇÃO DO TAMANHO DA POPULAÇÃO")
     entrada = None
-    tamPopulacao: int = 0
+    tam_populacao: int = 0
     while entrada is None:
         print(f"Digite um número inteiro positivo maior ou igual a {MIN_POPULACAO} e menor ou igual a {MAX_POPULACAO}: ", end="", flush=True)
         entrada = ler_inteiro_positivo(MIN_POPULACAO, MAX_POPULACAO)
         if entrada is not None:
-            tamPopulacao = entrada
-            print(f"Tamanho da população definido para {tamPopulacao}.\n")
+            tam_populacao = entrada
+            print(f"Tamanho da população definido para {tam_populacao}.\n")
 
 
 
@@ -172,7 +172,7 @@ if __name__ == "__main__":
         entrada = ler_inteiro_positivo(1, 1)
         if entrada is not None:
             if entrada == 1:
-                populacao = populacao_inicial_aleatoria(list(cidades.keys()), tamPopulacao)
+                populacao = populacao_inicial_aleatoria(list(cidades.keys()), tam_populacao)
             else:
                 # Implementar heurística aqui
                 pass
@@ -224,7 +224,7 @@ if __name__ == "__main__":
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     clock = pygame.time.Clock()
 
-    limites_estimados = calcular_limites_estimados(matrizDistancias)
+    limites_estimados = calcular_limites_estimados(matriz_distancias)
     geracao = 0
     melhores_solucoes: List[Tuple[List[str], float, List[int]]] = []
     melhor_fitness: float = float('inf')
@@ -232,23 +232,23 @@ if __name__ == "__main__":
     criterio_atingido: str = ""
 
     # Loop de execução
-    emExecucao: bool = True
-    while emExecucao:
+    em_execucao: bool = True
+    while em_execucao:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                emExecucao = False
+                em_execucao = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
-                    emExecucao = False
+                    em_execucao = False
         
         geracao += 1
         populacao_fitness_trajeto: List[Tuple[List[str], float, List[int]]] = []
         for individuo in populacao:
             populacao_fitness_trajeto.append(
                 calcular_fitness_prioridade_tempo(
-                    matrizDistancias,
-                    matrizAviao,
-                    matrizTrem,
+                    matriz_distancias,
+                    matriz_aviao,
+                    matriz_trem,
                     individuo,
                     *limites_estimados))
         populacao_fitness_trajeto.sort(key=itemgetter(1), reverse=False)
@@ -279,7 +279,7 @@ if __name__ == "__main__":
                 criterio_atingido = f"Convergência atingida ({max_geracoes_sem_melhoria} gerações sem melhoria)"
         
         if parar_execucao:
-            emExecucao = False
+            em_execucao = False
 
         tela.fill(COR_BRANCO)
         draw_plot(tela, list(range(len(melhores_solucoes))), [solucao[1] for solucao in melhores_solucoes], y_label="Gráfico de fitness")
@@ -294,14 +294,14 @@ if __name__ == "__main__":
         # Implementação do algoritmo genético: seleção
         # - Utiliza elitismo para iniciar a nova população com os 10% melhores resultados
         # ------------------------------------------------------------
-        nova_populacao: List[List[str]] = list(populacao_fitness_trajeto[i][0] for i in range(tamPopulacao // 10))
+        nova_populacao: List[List[str]] = list(populacao_fitness_trajeto[i][0] for i in range(tam_populacao // 10))
 
         # ------------------------------------------------------------
         # Implementação do algoritmo genético: cruzamento
         # - Utiliza toneiro para selecionar os pais;
         # - Utiliza Edge Recombination Crossover (ERX) para gerar os filhos;
         # ------------------------------------------------------------
-        while len(nova_populacao) < tamPopulacao:
+        while len(nova_populacao) < tam_populacao:
             p1 = selecao_por_torneio(populacao_fitness_trajeto)
             p2 = selecao_por_torneio(populacao_fitness_trajeto)
             if p1 is not None and p2 is not None:
@@ -315,7 +315,7 @@ if __name__ == "__main__":
             nova_populacao[i] = aplicar_mutacoes(nova_populacao[i])
 
         # Finalizando esta geração, definindo a população para a próxima geração
-        populacao = nova_populacao[:tamPopulacao]        
+        populacao = nova_populacao[:tam_populacao]        
 
     # Finalização
     tempo_fim = time.time()
@@ -337,9 +337,9 @@ if __name__ == "__main__":
     try:
         diretorio_atual = os.path.dirname(os.path.abspath(__file__))
         caminho_pdf = gerar_relatorio_pdf(
-            num_cidades=numCidades,
+            num_cidades=num_cidades,
             cidades=cidades,
-            tamanho_populacao=tamPopulacao,
+            tamanho_populacao=tam_populacao,
             total_geracoes=geracao,
             criterio_parada=criterio_atingido if criterio_atingido else "Manual",
             melhor_fitness=melhor_fitness,

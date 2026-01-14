@@ -6,20 +6,19 @@ import platform
 import re
 
 
-
-def imprimir_matriz(matriz, largura: int = 8, casasDecimais: int = 0):
+def imprimir_matriz(matriz, largura: int = 8, casas_decimais: int = 0):
     """
     Imprime uma matriz (lista de listas) formatada no console.
     - matriz: lista de listas (n x n)
     - largura: largura fixa de cada coluna (inclui sinal/decimal)
-    - casasDecimais: casas decimais para números flutuantes
+    - casas_decimais: casas decimais para números flutuantes
     """
     if not matriz:
         print("Matriz vazia")
         return
 
     n = len(matriz)
-    fmt = f"{{:>{largura}.{casasDecimais}f}}"
+    fmt = f"{{:>{largura}.{casas_decimais}f}}"
 
     # Impressão do cabeçalho
     labels = [indice_para_letra(j) for j in range(n)]

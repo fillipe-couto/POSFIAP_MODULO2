@@ -1,10 +1,23 @@
-from parametros import LIM_CARRO_ELETRICO, PESO_TEMPO, PROB_MUTACAO
-from parametros import TIPO_TRANSPORTE_AVIAO, TIPO_TRANSPORTE_TREM, TIPO_TRANSPORTE_CARRO_ELETRICO, TIPO_TRANSPORTE_CAMINHAO
-from parametros import VELOC_AVIAO, VELOC_TREM, VELOC_CARRO_ELETRICO, VELOC_CAMINHAO
-from parametros import CUSTO_AVIAO, CUSTO_TREM, CUSTO_CARRO_ELETRICO, CUSTO_CAMINHAO
-from typing import List, Tuple
 import random
+from typing import List, Tuple
 
+from parametros import (
+    CUSTO_AVIAO,
+    CUSTO_CAMINHAO,
+    CUSTO_CARRO_ELETRICO,
+    CUSTO_TREM,
+    LIM_CARRO_ELETRICO,
+    PESO_TEMPO,
+    PROB_MUTACAO,
+    TIPO_TRANSPORTE_AVIAO,
+    TIPO_TRANSPORTE_CAMINHAO,
+    TIPO_TRANSPORTE_CARRO_ELETRICO,
+    TIPO_TRANSPORTE_TREM,
+    VELOC_AVIAO,
+    VELOC_CAMINHAO,
+    VELOC_CARRO_ELETRICO,
+    VELOC_TREM,
+)
 
 
 def populacao_inicial_aleatoria(cidades: List[str], tamanho_populacao: int) -> List[List[str]]:
@@ -15,7 +28,7 @@ def populacao_inicial_aleatoria(cidades: List[str], tamanho_populacao: int) -> L
 
 
 
-def calcular_limites_estimados(matrizDistancias: List[List[float]]) -> Tuple[int, int, int, int]:
+def calcular_limites_estimados(matriz_distancias: List[List[float]]) -> Tuple[int, int, int, int]:
     """
     Calcula os limites teóricos de tempo e custo para normalização.    
     Retorna uma tupla com [tempo_min, tempo_max, custo_min, custo_max], onde:
@@ -24,10 +37,10 @@ def calcular_limites_estimados(matrizDistancias: List[List[float]]) -> Tuple[int
     3 - custo_min: considerando todos os trechos feitos de carro elétrico;
     4 - custo_max: considerando todos os trechos feitos de avião;
     """
-    numCidades = len(matrizDistancias)
-    distancia_total_entre_cidades = sum(sum(linha) for linha in matrizDistancias) / 2    
-    dist_media_entre_cidades = distancia_total_entre_cidades / (numCidades * (numCidades - 1) / 2)
-    dist_media_rota = dist_media_entre_cidades * numCidades
+    num_cidades = len(matriz_distancias)
+    distancia_total_entre_cidades = sum(sum(linha) for linha in matriz_distancias) / 2    
+    dist_media_entre_cidades = distancia_total_entre_cidades / (num_cidades * (num_cidades - 1) / 2)
+    dist_media_rota = dist_media_entre_cidades * num_cidades
     
     tempo_min = int(dist_media_rota // VELOC_AVIAO)
     tempo_max = int(dist_media_rota // VELOC_CAMINHAO)    
@@ -38,15 +51,15 @@ def calcular_limites_estimados(matrizDistancias: List[List[float]]) -> Tuple[int
 
 
 def calcular_fitness_prioridade_tempo(
-    matrizDistancias: List[List[float]],
-    matrizAviao: List[List[int]],
-    matrizTrem: List[List[int]],
+    matriz_distancias: List[List[float]],
+    matriz_aviao: List[List[int]],
+    matriz_trem: List[List[int]],
     individuo: List[str],
     tempo_min,
     tempo_max,
     custo_min,
     custo_max,
-    pesoTempo: float = PESO_TEMPO) -> Tuple[List[str], float, List[int]]:
+    peso_tempo: float = PESO_TEMPO) -> Tuple[List[str], float, List[int]]:
     """
     Calcula o fitness de cada indivíduo na população, preferindo primeiro os veículos mais rápidos:
     1 - Mede o tempo total (buscando o menor tempo por transportes mais rápidos);
@@ -63,13 +76,13 @@ def calcular_fitness_prioridade_tempo(
         cidade_proxima = individuo[(i + 1) % len(individuo)]
         indice_atual = ord(cidade_atual) - ord('A')
         indice_proxima = ord(cidade_proxima) - ord('A')
-        distancia = int(matrizDistancias[indice_atual][indice_proxima])
+        distancia = int(matriz_distancias[indice_atual][indice_proxima])
 
-        if matrizAviao[indice_atual][indice_proxima] == 1:
+        if matriz_aviao[indice_atual][indice_proxima] == 1:
             tempo_total += distancia // VELOC_AVIAO
             custo_total += distancia * CUSTO_AVIAO
             lista_transportes.append(TIPO_TRANSPORTE_AVIAO)
-        elif matrizTrem[indice_atual][indice_proxima] == 1:
+        elif matriz_trem[indice_atual][indice_proxima] == 1:
             tempo_total += distancia // VELOC_TREM
             custo_total += distancia * CUSTO_TREM
             lista_transportes.append(TIPO_TRANSPORTE_TREM)
@@ -84,7 +97,7 @@ def calcular_fitness_prioridade_tempo(
     
     tempo_norm = (tempo_total - tempo_min) / (tempo_max - tempo_min)    
     custo_norm = (custo_total - custo_min) / (custo_max - custo_min)    
-    return individuo, tempo_norm * pesoTempo + custo_norm * (1 - pesoTempo), lista_transportes
+    return individuo, tempo_norm * peso_tempo + custo_norm * (1 - peso_tempo), lista_transportes
 
 
 
@@ -146,13 +159,13 @@ def edge_recombination_crossover(p1: List[str], p2: List[str]) -> Tuple[List[str
             if adj[atual]:
                 candidatos = list(adj[atual])
                 melhor = []
-                lenMelhor = None
+                len_melhor = None
                 for c in candidatos:
                     l = len(adj.get(c, ()))
-                    if lenMelhor is None or l < lenMelhor:
+                    if len_melhor is None or l < len_melhor:
                         melhor = [c]
-                        lenMelhor = l
-                    elif l == lenMelhor:
+                        len_melhor = l
+                    elif l == len_melhor:
                         melhor.append(c)
                 atual = random.choice(melhor)
             else:
