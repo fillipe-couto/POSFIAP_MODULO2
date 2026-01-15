@@ -1,3 +1,7 @@
 matplotlib
 numpy
 pygame
+openai
+weasyprint
+python-dotenv
+jinja2

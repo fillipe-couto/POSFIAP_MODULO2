@@ -1,3 +1,9 @@
 venv/
 .venv/
 __pycache__/
+
+# Arquivos de configuração sensíveis
+.env
+
+# Relatório PDF gerado
+relatorio_tsp.pdf
