@@ -195,8 +195,30 @@
             <h3>Métricas da Solução</h3>
             <p><strong>Fitness:</strong> {{ melhor_fitness }}</p>
             <p><strong>Número de trechos:</strong> {{ num_trechos }}</p>
-            <p><strong>Transportes utilizados:</strong> {{ transportes }}</p>
         </div>
+        
+        {% if estatisticas_transporte %}
+        <div class="solution-box">
+            <h3>Transportes Mais Utilizados</h3>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for stat in estatisticas_transporte %}
+                <li><strong>{{ stat.quantidade }}x</strong> {{ stat.nome }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        {% if estatisticas_distancia %}
+        <div class="solution-box">
+            <h3>Distância Percorrida por Transporte</h3>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for stat in estatisticas_distancia %}
+                <li><strong>{{ stat.distancia_km }} km</strong> - {{ stat.nome }} ({{ stat.quantidade }}x)</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
         <div class="solution-box">
             <h3>Trajeto Completo</h3>
             <p><code>{{ trajeto }}</code></p>
@@ -218,6 +240,16 @@
         <h2>🔍 Análise da Solução <span class="badge badge-llm">Gerado por IA</span></h2>
         <ul>
         {% for item in analise_solucao %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Análise Logística (LLM) -->
+    <div class="section">
+        <h2>🚚 Análise Logística de Transportes <span class="badge badge-llm">Gerado por IA</span></h2>
+        <ul>
+        {% for item in analise_logistica %}
             <li>{{ item }}</li>
         {% endfor %}
         </ul>

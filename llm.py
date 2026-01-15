@@ -5,10 +5,10 @@ from typing import Dict
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from parametros import LLM_MAX_OUTPUT_TOKENS, LLM_TEMPERATURE
+
 # Carrega variáveis do .env
 load_dotenv()
-
-MAX_OUTPUT_TOKENS = 3500
 
 
 def gerar_analise_tsp_llm(dados_tsp: Dict) -> Dict:
@@ -16,14 +16,14 @@ def gerar_analise_tsp_llm(dados_tsp: Dict) -> Dict:
     
     # System prompt: define persona, tom e regras gerais (reutilizável)
     system_instructions = """
-Você é um especialista sênior em algoritmos genéticos e otimização combinatória.
-Seu papel é analisar resultados de experimentos e fornecer insights técnicos profundos.
+Você é um especialista sênior em algoritmos genéticos e otimização logística.
+Seu papel é analisar resultados de experimentos e fornecer insights técnicos profundos sobre algoritmos e operações de transporte.
 
 Sempre:
-- Seja técnico, mas didático
-- Foque em interpretação e insights, não em repetir dados
+- Seja técnico e didático
+- Seja sucinto, não repita informações
 - Use linguagem clara e objetiva em PT-BR
-- Responda no formato JSON solicitado, sem texto adicional
+- Pense como um analista de logística ao avaliar transportes
 """
 
     # User prompt: tarefa específica, dados, instruções detalhadas e formato de saída
@@ -36,14 +36,14 @@ DADOS DA EXECUÇÃO:
 INSTRUÇÕES IMPORTANTES:
 - NÃO repita dados brutos (trajeto, fitness, gerações) - eles já estão visíveis no relatório
 - FOQUE em: interpretação qualitativa, eficiência do algoritmo, insights técnicos e recomendações
+- Para análise logística: avalie eficiência modal, custo-benefício, distribuição de carga, e otimização de frota
 - Use formato de bullets para facilitar leitura
-- Seja conciso mas informativo
 
 Gere uma análise estruturada em JSON seguindo exatamente esta estrutura:
 
 {{
-  "titulo": "Análise de Otimização - Problema do Caixeiro Viajante",
-  "resumo_executivo": "Parágrafo de 2-3 linhas contextualizando o problema, resultado principal e eficiência computacional",
+  "titulo": "Análise de Otimização - Traveling Salesman Problem (TSP) - Algoritmo Genético",
+  "resumo_executivo": "Parágrafo de 3-4 linhas contextualizando o problema, resultado principal e eficiência computacional",
   "analise_convergencia": [
     "Bullet avaliando a convergência do algoritmo",
     "Bullet sobre qualidade da solução encontrada",
@@ -55,6 +55,12 @@ Gere uma análise estruturada em JSON seguindo exatamente esta estrutura:
     "Bullet avaliando distribuição de transportes usados",
     "Bullet comentando viabilidade prática da rota",
     "Bullet comparando com expectativas teóricas"
+  ],
+  "analise_logistica": [
+    "Bullet sobre eficiência modal (qual transporte mais adequado)",
+    "Bullet sobre otimização de custo vs tempo baseado nos transportes escolhidos",
+    "Bullet sobre distribuição de distâncias por tipo de transporte",
+    "Bullet sobre recomendações operacionais e estratégicas"
   ],
   "insights_tecnicos": [
     "Bullet identificando padrões na solução",
@@ -78,8 +84,8 @@ Retorne APENAS o JSON válido, sem markdown ou texto extra.
                 {"role": "system", "content": system_instructions},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=MAX_OUTPUT_TOKENS,
-            temperature=0.4,
+            max_tokens=LLM_MAX_OUTPUT_TOKENS,
+            temperature=LLM_TEMPERATURE,
             response_format={"type": "json_object"}
         )
         
@@ -103,6 +109,10 @@ Retorne APENAS o JSON válido, sem markdown ou texto extra.
                 f"Solução encontrada utiliza {dados_tsp['resultado']['num_trechos']} trechos.",
                 "Análise qualitativa indisponível (LLM offline)."
             ],
+            "analise_logistica": [
+                "Análise logística indisponível (LLM offline).",
+                "Execute novamente com conexão ativa para análise detalhada de transportes."
+            ],
             "insights_tecnicos": [
                 "Análise de padrões indisponível (LLM offline)."
             ],
@@ -111,3 +121,4 @@ Retorne APENAS o JSON válido, sem markdown ou texto extra.
                 "Verifique configuração da chave API da OpenAI."
             ]
         }
+

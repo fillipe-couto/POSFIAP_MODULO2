@@ -1,4 +1,3 @@
-# Imports
 import math
 import os
 import random
@@ -50,7 +49,7 @@ if __name__ == "__main__":
     print("*                  POS-TECH FIAP - Módulo 02                  *")
     print("*                  IA PARA DEV - TURMA 7IADT                  *")
     print("*  PROJETO 2 - Solução para o problema do Caixeiro Viajante   *")
-    print("*            (TSP - Traveling Salesperson Problem)            *")
+    print("*            (TSP - Traveling Salesman Problem)            *")
     print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n")
 
 
@@ -177,8 +176,6 @@ if __name__ == "__main__":
                 # Implementar heurística aqui
                 pass
 
-
-
     # Definição dos critérios de parada
     print("\n8 - DEFINIÇÃO DOS CRITÉRIOS DE PARADA")
     print("Escolha os critérios de parada para o algoritmo genético:")
@@ -220,7 +217,7 @@ if __name__ == "__main__":
     input("\nPressione ENTER para iniciar a solução do problema do caixeiro viajante usando algoritmo genético...\n")
     tempo_inicio = time.time()
     pygame.init()
-    pygame.display.set_caption("PÓS TECH FIAP - Turma 7IADT/Módulo 02 - TSP Solver")
+    pygame.display.set_caption("PÓS TECH FIAP - Turma 7IADT/Módulo 02 - Traveling Salesman Problem (TSP) - Algoritmo Genético")
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     clock = pygame.time.Clock()
 
@@ -346,11 +343,10 @@ if __name__ == "__main__":
             melhor_trajeto=melhores_solucoes[-1][0],
             transportes=melhores_solucoes[-1][2],
             tempo_execucao=tempo_execucao,
+            matriz_distancias=matriz_distancias,
             diretorio_saida=diretorio_atual
         )
         print(f"\n✓ Relatório PDF gerado e aberto: {os.path.basename(caminho_pdf)}")
     except Exception as e:
         print(f"\n Erro ao gerar relatório PDF: {e}")
         print("Verifique se o arquivo .env está configurado com sua chave da OpenAI.")
-    
-    print(f"\nFim do módulo \"{__name__}\"\n")
