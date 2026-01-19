@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        .header .subtitle {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .section p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+        
+        .section ul {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .section li {
+            margin: 8px 0;
+        }
+        
+        .metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #764ba2;
+        }
+        
+        .metric-card .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+        
+        .solution-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+        
+        .solution-box h3 {
+            margin-top: 0;
+            color: #28a745;
+            font-size: 16px;
+        }
+        
+        .solution-box p {
+            margin: 5px 0;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #d63384;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .badge-llm {
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ titulo }}</h1>
+        <p class="subtitle">PÓS-TECH FIAP - Módulo 02 - IA para DEV - Turma 7IADT</p>
+        <p class="subtitle">Gerado em: {{ data_hora }}</p>
+    </div>
+    
+    <!-- Resumo Executivo (LLM) -->
+    <div class="section">
+        <h2>📊 Resumo Executivo <span class="badge badge-llm">Gerado por IA</span></h2>
+        <p>{{ resumo_executivo }}</p>
+    </div>
+    
+    <!-- Configuração do Algoritmo (Dados Técnicos) -->
+    <div class="section">
+        <h2>⚙️ Configuração do Algoritmo</h2>
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="label">Cidades</div>
+                <div class="value">{{ num_cidades }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">População</div>
+                <div class="value">{{ tamanho_populacao }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Gerações</div>
+                <div class="value">{{ total_geracoes }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Tempo (s)</div>
+                <div class="value">{{ tempo_execucao }}</div>
+            </div>
+        </div>
+        <p><strong>Critério de parada:</strong> {{ criterio_parada }}</p>
+    </div>
+    
+    <!-- Solução Encontrada (Dados Técnicos) -->
+    <div class="section">
+        <h2>🗺️ Solução Encontrada</h2>
+        <div class="solution-box">
+            <h3>Métricas da Solução</h3>
+            <p><strong>Fitness:</strong> {{ melhor_fitness }}</p>
+            <p><strong>Número de trechos:</strong> {{ num_trechos }}</p>
+        </div>
+        
+        {% if estatisticas_transporte %}
+        <div class="solution-box">
+            <h3>Transportes Mais Utilizados</h3>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for stat in estatisticas_transporte %}
+                <li><strong>{{ stat.quantidade }}x</strong> {{ stat.nome }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        {% if estatisticas_distancia %}
+        <div class="solution-box">
+            <h3>Distância Percorrida por Transporte</h3>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for stat in estatisticas_distancia %}
+                <li><strong>{{ stat.distancia_km }} km</strong> - {{ stat.nome }} ({{ stat.quantidade }}x)</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <div class="solution-box">
+            <h3>Trajeto Completo</h3>
+            <p><code>{{ trajeto }}</code></p>
+        </div>
+    </div>
+    
+    <!-- Análise de Convergência (LLM) -->
+    <div class="section">
+        <h2>📈 Análise de Convergência <span class="badge badge-llm">Gerado por IA</span></h2>
+        <ul>
+        {% for item in analise_convergencia %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Análise da Solução (LLM) -->
+    <div class="section">
+        <h2>🔍 Análise da Solução <span class="badge badge-llm">Gerado por IA</span></h2>
+        <ul>
+        {% for item in analise_solucao %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Análise Logística (LLM) -->
+    <div class="section">
+        <h2>🚚 Análise Logística de Transportes <span class="badge badge-llm">Gerado por IA</span></h2>
+        <ul>
+        {% for item in analise_logistica %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Insights Técnicos (LLM) -->
+    <div class="section">
+        <h2>💡 Insights Técnicos <span class="badge badge-llm">Gerado por IA</span></h2>
+        <ul>
+        {% for item in insights_tecnicos %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Recomendações (LLM) -->
+    <div class="section">
+        <h2>🎯 Recomendações <span class="badge badge-llm">Gerado por IA</span></h2>
+        <ul>
+        {% for item in recomendacoes %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="footer">
+        <p><strong>Relatório gerado automaticamente pelo sistema TSP Solver</strong></p>
+        <p>Análise inteligente: GPT-4o-mini - OpenAI</p>
+    </div>
+</body>
+</html>
